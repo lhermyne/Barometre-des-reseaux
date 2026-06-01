@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Baromètre des réseaux</title>
+  <link rel="icon" type="image/svg+xml" href="data/profile_pics/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #05090b;
@@ -65,11 +69,12 @@
       width: 74px;
       height: 74px;
       display: block;
-      background-image: url("data/4-5POverlay.png");
+      background-image: url("data/profile_pics/logo.svg");
       background-repeat: no-repeat;
-      background-size: 270px auto;
-      background-position: -2px -2px;
+      background-size: contain;
+      background-position: center;
       filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
+      transition: filter 180ms ease, transform 180ms ease;
     }
 
     .brand-handle {
@@ -77,10 +82,20 @@
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
+      transition: color 180ms ease, text-shadow 180ms ease;
+    }
+
+    .brand-link:hover .brand-logo-mark {
+      filter:
+        drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55))
+        drop-shadow(0 0 10px rgba(57, 255, 136, 0.76))
+        drop-shadow(0 0 22px rgba(57, 255, 136, 0.42));
+      transform: translateY(-1px);
     }
 
     .brand-link:hover .brand-handle {
-      color: var(--green);
+      color: #39ff88;
+      text-shadow: 0 0 8px rgba(57, 255, 136, 0.72);
     }
 
     h1 {
@@ -291,7 +306,7 @@
     }
 
     .selection-button.active {
-      color: var(--green);
+      color: #39ff88;
       background: var(--green);
       box-shadow: 0 0 12px rgba(28, 204, 104, 0.12);
     }
@@ -428,12 +443,12 @@
       gap: 11px;
       padding: 8px;
       position: relative;
-      background: rgba(104, 128, 132, 0.5);
+      background: rgba(104, 128, 132, 0.42);
       border: 0;
       color: var(--text);
       clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
       isolation: isolate;
-      transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+      transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
     }
 
     .candidate > * {
@@ -447,7 +462,9 @@
       inset: 1px;
       clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
       pointer-events: none;
-      background: rgba(255, 255, 255, 0.045);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+        rgba(1, 8, 10, 0.85);
       z-index: 0;
     }
 
@@ -473,29 +490,37 @@
     }
 
     .candidate:not(.active) {
-      opacity: 0.68;
+      color: var(--muted);
+      opacity: 0.78;
     }
 
     .candidate-photo-frame {
       width: 54px;
       height: 54px;
       display: block;
+      position: relative;
+      background: rgba(104, 128, 132, 0.62);
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      isolation: isolate;
     }
 
     .candidate-photo {
-      width: 100%;
-      height: 100%;
+      position: absolute;
+      inset: 1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
       object-fit: cover;
       background: rgba(0, 0, 0, 0.55);
-      border: 1px solid rgba(104, 128, 132, 0.55);
-      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      border: 0;
+      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
     }
 
     .candidate-photo-fallback {
       display: grid;
       place-items: center;
-      font-size: 20px;
+      font-size: 17px;
       font-weight: 900;
+      letter-spacing: 0.04em;
       color: var(--muted);
     }
 
@@ -597,7 +622,7 @@
     }
 
     .range-button.active {
-      color: var(--green);
+      color: #39ff88;
       background: var(--green);
     }
 
@@ -748,7 +773,13 @@
       }
 
       h1 {
-        font-size: clamp(30px, 11vw, 42px);
+        font-size: clamp(25px, 8vw, 32px);
+        line-height: 0.88;
+      }
+
+      h1 .title-line {
+        display: block;
+        white-space: nowrap;
       }
 
       .brand-heading {
@@ -759,7 +790,7 @@
       .brand-logo-mark {
         width: 56px;
         height: 56px;
-        background-size: 206px auto;
+        background-size: contain;
       }
 
       .subtitle {
@@ -784,6 +815,17 @@
       .candidate-panel,
       .chart-panel {
         padding: 12px;
+      }
+
+      .candidate-panel {
+        --panel-border-color: rgba(126, 152, 156, 0.72);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+      }
+
+      .candidate-panel::before {
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+          rgba(13, 24, 27, 0.72);
       }
 
       .chart-panel {
@@ -909,7 +951,7 @@
         <span class="brand-handle">@L_HERMYNE</span>
       </a>
       <div>
-        <h1>Baromètre des réseaux</h1>
+        <h1><span class="title-line">Baromètre</span> <span class="title-line">des réseaux</span></h1>
         <div class="subtitle">Courbes candidates, dynamiques journalières et abonnés par plateforme.</div>
       </div>
     </div>
@@ -1005,10 +1047,10 @@
         </div>
 
         <div class="button-grid row selection-actions">
-          <button type="button" class="selection-button" id="selectTop" data-selection-action="top"><span>Top actuel</span></button>
-          <button type="button" class="selection-button" id="selectAll" data-selection-action="all"><span>Tout afficher</span></button>
-          <button type="button" class="selection-button" id="clearAll" data-selection-action="none"><span>Tout masquer</span></button>
-          <button type="button" class="selection-button" id="invertSelection" data-selection-action="invert"><span>Inverser</span></button>
+          <button type="button" class="selection-button active" id="selectAll" data-selection-action="all" aria-pressed="true"><span>Tout afficher</span></button>
+          <button type="button" class="selection-button" id="selectTop" data-selection-action="top" aria-pressed="false"><span>Top actuel</span></button>
+          <button type="button" class="selection-button" id="clearAll" data-selection-action="none" aria-pressed="false"><span>Tout masquer</span></button>
+          <button type="button" class="selection-button" id="invertSelection" data-selection-action="invert" aria-pressed="false"><span>Inverser</span></button>
         </div>
 
         <div class="row">
@@ -1039,13 +1081,30 @@
       "#f36fb5", "#98e64d", "#d9e2e7", "#8fa8ff", "#ffaa9b", "#57f0a4", "#c8c04f"
     ];
 
+    const CANDIDATE_COLORS = {
+      "jean luc melenchon": "#ff2f3f",
+      "francois hollande": "#ff6aa2",
+      "raphael glucksmann": "#b85cff",
+      "gabriel attal": "#ffd84a",
+      "edouard philippe": "#f0a83a",
+      "dominique de villepin": "#dce8f2",
+      "david lisnard": "#57d7ff",
+      "bruno retailleau": "#39a8ff",
+      "nicolas dupont aignan": "#28d6c8",
+      "francois asselineau": "#7b8cff",
+      "marine le pen": "#263bff",
+      "jordan bardella": "#263bff",
+      "eric zemmour": "#141f8f",
+      "sarah knafo": "#2b1680"
+    };
+
     const state = {
       candidates: [],
       histories: {},
       selectedPlatforms: new Set(Object.keys(PLATFORM_FILES)),
       selectedRange: "all",
       selected: new Set(),
-      selectionAction: "top",
+      selectionAction: "all",
       series: [],
       hover: null,
       ready: false
@@ -1153,44 +1212,7 @@
       return safeName ? `data/profile_pics/${safeName}.png` : "";
     }
 
-    function candidateInstagramUsername(candidate) {
-      return candidate.accounts?.instagram?.username || "";
-    }
-
-    function instagramProfilePictures(candidateId) {
-      const history = state.histories.instagram || [];
-      const urls = [];
-      for (let index = history.length - 1; index >= 0; index -= 1) {
-        const url = account(history[index], candidateId)?.profile_pic_url;
-        if (url && !urls.includes(url)) urls.push(url);
-      }
-      return urls;
-    }
-
-    function candidatePhotoSources(candidate) {
-      const sources = instagramProfilePictures(candidate.id);
-      const username = candidateInstagramUsername(candidate);
-      if (username) sources.push(`https://unavatar.io/instagram/${encodeURIComponent(username)}`);
-      const localPath = candidatePhotoPath(candidate);
-      if (localPath) sources.push(localPath);
-      return sources;
-    }
-
     function handleCandidateImageError(image) {
-      let sources = [];
-      try {
-        sources = JSON.parse(image.dataset.photoSources || "[]");
-      } catch (error) {
-        sources = [];
-      }
-
-      const nextIndex = Number(image.dataset.photoIndex || 0) + 1;
-      if (sources[nextIndex]) {
-        image.dataset.photoIndex = String(nextIndex);
-        image.src = sources[nextIndex];
-        return;
-      }
-
       image.style.display = "none";
       image.nextElementSibling.style.display = "grid";
     }
@@ -1266,7 +1288,20 @@
       return candidate.display_name || candidate.id;
     }
 
+    function candidateInitials(candidate) {
+      const words = candidateName(candidate)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[-_']/g, " ")
+        .split(/\s+/)
+        .filter(Boolean);
+
+      const initials = words.map(word => word[0]).join("").toUpperCase();
+      return initials.slice(0, 3) || "?";
+    }
+
     function getColor(candidate, index) {
+      if (CANDIDATE_COLORS[candidate.id]) return CANDIDATE_COLORS[candidate.id];
       const key = candidate.id || String(index);
       let hash = 0;
       for (let i = 0; i < key.length; i += 1) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
@@ -1481,8 +1516,8 @@
           <td><span class="dot" style="background:${row.color}"></span> ${escapeHtml(row.label)}</td>
           <td class="${valueClass(row.latest)}">${formatValue(row.latest, metric)}</td>
           <td class="${valueClass(row.diff)}">${formatValue(row.diff, metric)}</td>
-          <td>${formatValue(row.min, metric)}</td>
-          <td>${formatValue(row.max, metric)}</td>
+          <td class="${valueClass(row.min)}">${formatValue(row.min, metric)}</td>
+          <td class="${valueClass(row.max)}">${formatValue(row.max, metric)}</td>
         </tr>
       `).join("");
 
@@ -1505,18 +1540,16 @@
         const color = getColor(candidate, index);
         const checked = state.selected.has(candidate.id) ? "checked" : "";
         const active = state.selected.has(candidate.id) ? "active" : "";
-        const initial = candidateName(candidate).trim().charAt(0) || "?";
+        const initials = candidateInitials(candidate);
         const name = escapeHtml(candidateName(candidate));
         const id = escapeHtml(candidate.id);
-        const photoSources = candidatePhotoSources(candidate);
-        const photoPath = escapeHtml(photoSources[0] || "");
-        const photoSourceData = escapeHtml(JSON.stringify(photoSources));
+        const photoPath = escapeHtml(candidatePhotoPath(candidate));
         return `
           <label class="candidate ${active}" title="${name}">
             <input type="checkbox" data-candidate="${id}" ${checked}>
             <span class="candidate-photo-frame">
-              <img class="candidate-photo" src="${photoPath}" data-photo-sources="${photoSourceData}" data-photo-index="0" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="handleCandidateImageError(this)">
-              <span class="candidate-photo candidate-photo-fallback" style="display:none">${escapeHtml(initial)}</span>
+              <img class="candidate-photo" src="${photoPath}" alt="" loading="lazy" onerror="handleCandidateImageError(this)">
+              <span class="candidate-photo candidate-photo-fallback" style="display:none">${escapeHtml(initials)}</span>
             </span>
             <span>
               <span class="candidate-name">${name}</span>
@@ -1576,15 +1609,14 @@
       normalizeHistories();
       state.selectedPlatforms = new Set(Object.keys(PLATFORM_FILES));
       state.selectedRange = "all";
-      state.selected = new Set();
-      setSelectionAction("top");
+      state.selected = new Set(state.candidates.map(candidate => candidate.id));
+      setSelectionAction("all");
       state.ready = true;
       els.fileNotice.classList.remove("visible");
       els.status.textContent = `Données chargées : ${state.candidates.length} candidats, ${Object.keys(state.histories).length} plateformes.`;
       setPlatformButtons();
       setRangeButtons();
-      renderCandidateList();
-      selectTopCurrent();
+      refresh();
     }
 
     async function loadAuto() {
