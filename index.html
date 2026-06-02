@@ -641,6 +641,8 @@
       width: 100%;
       height: 100%;
       display: block;
+      cursor: crosshair;
+      touch-action: manipulation;
     }
 
     .tooltip {
@@ -1106,6 +1108,7 @@
       selected: new Set(),
       selectionAction: "all",
       series: [],
+      focusCandidateId: null,
       hover: null,
       ready: false
     };
@@ -1308,6 +1311,17 @@
       return COLORS[hash % COLORS.length];
     }
 
+    function setFocusedCandidate(candidateId) {
+      const nextFocus = candidateId || null;
+      if (state.focusCandidateId === nextFocus) return;
+      state.focusCandidateId = nextFocus;
+      drawChart();
+    }
+
+    function clearFocusedCandidate() {
+      setFocusedCandidate(null);
+    }
+
     function buildSeries() {
       const metric = els.metric.value;
       const dates = filteredDates();
@@ -1417,10 +1431,45 @@
         ctx.stroke();
       }
 
-      for (const series of state.series) {
+      const focusedId = state.focusCandidateId;
+      const drawableSeries = focusedId
+        ? [...state.series].sort((a, b) => {
+            if (a.candidate.id === focusedId) return 1;
+            if (b.candidate.id === focusedId) return -1;
+            return 0;
+          })
+        : state.series;
+
+      for (const series of drawableSeries) {
         const valid = series.points;
         if (!valid.length) continue;
+        const isFocused = focusedId && series.candidate.id === focusedId;
+        const isDimmed = focusedId && !isFocused;
+        const lineAlpha = isDimmed ? 0.16 : 1;
+        const pointAlpha = isDimmed ? 0.14 : 1;
+        const lineWidth = isFocused ? 4.4 : 2.5;
+        const pointRadius = isFocused ? 4.8 : 3.2;
 
+        if (isFocused) {
+          ctx.save();
+          ctx.globalAlpha = 0.22;
+          ctx.strokeStyle = series.color;
+          ctx.lineWidth = 10;
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          valid.forEach((point, index) => {
+            const x = xForDate(point.date);
+            const y = yForValue(point.value);
+            if (index === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.save();
+        ctx.globalAlpha = lineAlpha;
         ctx.beginPath();
         valid.forEach((point, index) => {
           const x = xForDate(point.date);
@@ -1430,25 +1479,31 @@
         });
 
         ctx.strokeStyle = series.color;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = lineWidth;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
         ctx.stroke();
+        ctx.restore();
 
         for (const point of valid) {
+          ctx.save();
+          ctx.globalAlpha = pointAlpha;
           ctx.beginPath();
-          ctx.arc(xForDate(point.date), yForValue(point.value), 3.2, 0, Math.PI * 2);
+          ctx.arc(xForDate(point.date), yForValue(point.value), pointRadius, 0, Math.PI * 2);
           ctx.fillStyle = series.color;
           ctx.fill();
+          ctx.restore();
         }
       }
 
       state.chartScale = { plot, min, max, allChartDates, xForDate, yForValue };
     }
 
-    function updateTooltip(event) {
-      if (!state.chartScale) return;
+    function findNearestPoint(clientX, clientY, maxDistance = 24) {
+      if (!state.chartScale) return null;
       const rect = els.canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
       let nearest = null;
       let nearestDistance = Infinity;
 
@@ -1464,11 +1519,10 @@
         }
       }
 
-      if (!nearest || nearestDistance > 24) {
-        els.tooltip.style.display = "none";
-        return;
-      }
+      return nearest && nearestDistance <= maxDistance ? nearest : null;
+    }
 
+    function showTooltip(nearest) {
       els.tooltip.innerHTML = `
         <strong style="color:${nearest.series.color}">${escapeHtml(nearest.series.label)}</strong><br>
         ${formatDate(nearest.point.date)}<br>
@@ -1493,6 +1547,34 @@
 
       els.tooltip.style.left = `${Math.max(margin, left)}px`;
       els.tooltip.style.top = `${Math.max(margin, top)}px`;
+    }
+
+    function hideTooltip() {
+      els.tooltip.style.display = "none";
+    }
+
+    function updateTooltip(event) {
+      const nearest = findNearestPoint(event.clientX, event.clientY, 24);
+      if (!nearest) {
+        hideTooltip();
+        clearFocusedCandidate();
+        return;
+      }
+
+      setFocusedCandidate(nearest.series.candidate.id);
+      showTooltip(nearest);
+    }
+
+    function handleChartClick(event) {
+      const nearest = findNearestPoint(event.clientX, event.clientY, 38);
+      if (!nearest) {
+        hideTooltip();
+        clearFocusedCandidate();
+        return;
+      }
+
+      setFocusedCandidate(nearest.series.candidate.id);
+      showTooltip(nearest);
     }
 
     function renderSummary() {
@@ -1545,7 +1627,7 @@
         const id = escapeHtml(candidate.id);
         const photoPath = escapeHtml(candidatePhotoPath(candidate));
         return `
-          <label class="candidate ${active}" title="${name}">
+          <label class="candidate ${active}" title="${name}" data-candidate-card="${id}">
             <input type="checkbox" data-candidate="${id}" ${checked}>
             <span class="candidate-photo-frame">
               <img class="candidate-photo" src="${photoPath}" alt="" loading="lazy" onerror="handleCandidateImageError(this)">
@@ -1563,6 +1645,10 @@
     function refresh() {
       if (!state.ready) return;
       buildSeries();
+      if (state.focusCandidateId && !state.series.some(series => series.candidate.id === state.focusCandidateId)) {
+        state.focusCandidateId = null;
+        hideTooltip();
+      }
       drawChart();
       renderSummary();
       renderCandidateList();
@@ -1691,6 +1777,13 @@
       setSelectionAction("custom");
       refresh();
     });
+    els.candidateList.addEventListener("mouseover", event => {
+      const card = event.target.closest("[data-candidate-card]");
+      if (!card || !state.selected.has(card.dataset.candidateCard)) return;
+      hideTooltip();
+      setFocusedCandidate(card.dataset.candidateCard);
+    });
+    els.candidateList.addEventListener("mouseleave", clearFocusedCandidate);
     els.selectTop.addEventListener("click", selectTopCurrent);
     els.selectAll.addEventListener("click", () => {
       state.selected = new Set(state.candidates.map(candidate => candidate.id));
@@ -1712,7 +1805,14 @@
       refresh();
     });
     els.canvas.addEventListener("mousemove", updateTooltip);
-    els.canvas.addEventListener("mouseleave", () => els.tooltip.style.display = "none");
+    els.canvas.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "mouse") handleChartClick(event);
+    });
+    els.canvas.addEventListener("click", handleChartClick);
+    els.canvas.addEventListener("mouseleave", () => {
+      hideTooltip();
+      clearFocusedCandidate();
+    });
     window.addEventListener("resize", refresh);
 
     loadAuto();
