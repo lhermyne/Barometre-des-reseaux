@@ -119,6 +119,100 @@
       line-height: 1.45;
     }
 
+    .site-footer {
+      padding: 0 38px 34px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .site-footer .status {
+      max-width: none;
+      text-align: left;
+    }
+
+    .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px 14px;
+    }
+
+    .footer-link {
+      width: auto;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--green);
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      clip-path: none;
+    }
+
+    .footer-link::before,
+    .footer-link::after {
+      display: none;
+    }
+
+    .footer-link:hover {
+      color: #39ff88;
+      text-shadow: 0 0 10px rgba(57, 255, 136, 0.5);
+      transform: none;
+    }
+
+    .methodology-dialog {
+      width: min(720px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 28px));
+      color: var(--text);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+        rgba(8, 18, 21, 0.96);
+      border: 1px solid rgba(126, 152, 156, 0.72);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.68);
+      padding: 24px;
+    }
+
+    .methodology-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.64);
+      backdrop-filter: blur(4px);
+    }
+
+    .methodology-dialog h2 {
+      margin: 0 0 12px;
+      color: #39ff88;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .methodology-dialog p,
+    .methodology-dialog li {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .methodology-dialog strong {
+      color: var(--text);
+    }
+
+    .methodology-dialog ul {
+      padding-left: 20px;
+    }
+
+    .methodology-dialog .dialog-close {
+      margin-top: 12px;
+      max-width: 180px;
+    }
+
     main {
       padding: 0 38px 38px;
       display: grid;
@@ -803,6 +897,20 @@
         font-size: 13px;
       }
 
+      .site-footer {
+        padding: 0 12px 22px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .footer-actions {
+        justify-content: flex-start;
+      }
+
+      .methodology-dialog {
+        padding: 18px;
+      }
+
       main {
         padding: 0 10px 18px;
         gap: 12px;
@@ -957,7 +1065,6 @@
         <div class="subtitle">Courbes candidates, dynamiques journalières et abonnés par plateforme.</div>
       </div>
     </div>
-    <div class="status" id="status">Chargement des fichiers JSON...</div>
   </header>
 
   <main>
@@ -1063,6 +1170,33 @@
     </aside>
   </main>
 
+  <footer class="site-footer">
+    <div class="status" id="status">Chargement des fichiers JSON...</div>
+    <div class="footer-actions">
+      <button type="button" class="footer-link" id="methodologyButton">Méthodologie</button>
+    </div>
+  </footer>
+
+  <dialog class="methodology-dialog" id="methodologyDialog">
+    <h2>Méthodologie</h2>
+    <p>
+      Le baromètre suit les comptes publics des personnalités renseignées dans les fichiers de données du projet,
+      sur Instagram, X, TikTok et Facebook.
+    </p>
+    <ul>
+      <li><strong>Dynamique jour</strong> : variation du nombre d'abonnés entre deux snapshots successifs, rapportée en pour mille.</li>
+      <li><strong>Abonnés</strong> : nombre brut d'abonnés relevé dans les historiques disponibles.</li>
+      <li><strong>Plateformes</strong> : les boutons permettent d'inclure ou d'exclure chaque réseau du calcul affiché.</li>
+      <li><strong>Périodes</strong> : le graphique peut afficher tout l'historique disponible ou une fenêtre récente.</li>
+      <li><strong>Candidats</strong> : la liste à droite permet d'afficher, masquer ou filtrer les courbes individuellement.</li>
+    </ul>
+    <p>
+      Les données du site sont conservées plus longtemps que celles du bot local afin de permettre une lecture historique
+      du baromètre.
+    </p>
+    <button type="button" class="selection-button dialog-close" id="methodologyClose"><span>Fermer</span></button>
+  </dialog>
+
   <script>
     const PLATFORM_FILES = {
       instagram: "data/instagram_history.json",
@@ -1132,7 +1266,10 @@
       kpiPeriod: document.getElementById("kpiPeriod"),
       kpiCandidates: document.getElementById("kpiCandidates"),
       kpiBest: document.getElementById("kpiBest"),
-      kpiWorst: document.getElementById("kpiWorst")
+      kpiWorst: document.getElementById("kpiWorst"),
+      methodologyButton: document.getElementById("methodologyButton"),
+      methodologyDialog: document.getElementById("methodologyDialog"),
+      methodologyClose: document.getElementById("methodologyClose")
     };
 
     const ctx = els.canvas.getContext("2d");
@@ -1812,6 +1949,21 @@
     els.canvas.addEventListener("mouseleave", () => {
       hideTooltip();
       clearFocusedCandidate();
+    });
+    els.methodologyButton.addEventListener("click", () => {
+      if (typeof els.methodologyDialog.showModal === "function") {
+        els.methodologyDialog.showModal();
+      } else {
+        els.methodologyDialog.setAttribute("open", "");
+      }
+    });
+    els.methodologyClose.addEventListener("click", () => {
+      els.methodologyDialog.close();
+    });
+    els.methodologyDialog.addEventListener("click", event => {
+      if (event.target === els.methodologyDialog) {
+        els.methodologyDialog.close();
+      }
     });
     window.addEventListener("resize", refresh);
 
