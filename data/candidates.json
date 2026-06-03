@@ -1,4 +1,5 @@
 [
+
   {
     "id": "jordan bardella",
     "display_name": "Jordan BARDELLA",
@@ -14,9 +15,120 @@
       },
       "facebook": {
         "username": "JordanBardella"
+      }
+    }
+  },
+
+  {
+    "id": "florian philippot",
+    "display_name": "Florian PHILIPPOT",
+    "accounts": {
+      "instagram": {
+        "username": "f_philippot"
       },
-      "youtube": {
-        "username": "J_Bardella"
+      "twitter": {
+        "username": "f_philippot"
+      },
+      "tiktok": {
+        "username": "florianphilippot"
+      },
+      "facebook": {
+        "username": "philippot.f"
+      }
+    }
+  },
+
+  {
+    "id": "marine tondelier",
+    "display_name": "Marine TONDELIER",
+    "accounts": {
+      "instagram": {
+        "username": "marinetondelier"
+      },
+      "twitter": {
+        "username": "marinetondelier"
+      },
+      "tiktok": {
+        "username": "marinetondelier"
+      },
+      "facebook": {
+        "username": "marinetondelierfr"
+      }
+    }
+  },
+
+  {
+    "id": "françois ruffin",
+    "display_name": "François RUFFIN",
+    "accounts": {
+      "instagram": {
+        "username": "francois_ruffin"
+      },
+      "twitter": {
+        "username": "Francois_Ruffin"
+      },
+      "tiktok": {
+        "username": "francois_ruffin"
+      },
+      "facebook": {
+        "username": "FrancoisRuffin80"
+      }
+    }
+  },
+
+  {
+    "id": "fabien roussel",
+    "display_name": "Fabien ROUSSEL",
+    "accounts": {
+      "instagram": {
+        "username": "fabien_roussel"
+      },
+      "twitter": {
+        "username": "Fabien_Roussel"
+      },
+      "tiktok": {
+        "username": "fabien_roussel"
+      },
+      "facebook": {
+        "username": "FabienRoussel59"
+      }
+    }
+  },
+
+  {
+    "id": "olivier faure",
+    "display_name": "Olivier FAURE",
+    "accounts": {
+      "instagram": {
+        "username": "Olivier Faure"
+      },
+      "twitter": {
+        "username": "faureolivier"
+      },
+      "tiktok": {
+        "username": "faure_olivier"
+      },
+      "facebook": {
+        "username": "olivierfaure77"
+      }
+    }
+  },
+
+  {
+    "id": "nathalie arthaud",
+    "display_name": "Nathalie ARTHAUD",
+    "accounts": {
+      "instagram": {
+        "username": "nathalie_arthaud_lo"
+      },
+      "twitter": {
+        "username": "n_arthaud"
+      },
+      "tiktok": {
+        "username": "nathaliearthaud"
+      },
+      "facebook": {
+        "username": "nathaliearthaud"
       }
     }
   },
@@ -36,9 +148,6 @@
       },
       "facebook": {
         "username": "edouardphilippelh"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -58,9 +167,6 @@
       },
       "facebook": {
         "username": "MarineLePen"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -80,9 +186,6 @@
       },
       "facebook": {
         "username": "dominiquedevillepin"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -102,9 +205,6 @@
       },
       "facebook": {
         "username": "lisnard.david"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -124,9 +224,6 @@
       },
       "facebook": {
         "username": "francoishollande.fr"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -146,9 +243,6 @@
       },
       "facebook": {
         "username": "GabrielAttal"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -168,9 +262,6 @@
       },
       "facebook": {
         "username": "raphaelglucksmann"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -190,9 +281,6 @@
       },
       "facebook": {
         "username": "Sarah-Knafo-61559003907671"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -212,9 +300,6 @@
       },
       "facebook": {
         "username": "JLMelenchon"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
@@ -234,14 +319,11 @@
       },
       "facebook": {
         "username": "nicolasdupontaignan"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
 
- {
+  {
     "id": "eric zemmour",
     "display_name": "Eric ZEMMOUR",
     "accounts": {
@@ -256,14 +338,11 @@
       },
       "facebook": {
         "username": "ZemmourEric"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
 
- {
+  {
     "id": "bruno retailleau",
     "display_name": "Bruno RETAILLEAU",
     "accounts": {
@@ -278,14 +357,11 @@
       },
       "facebook": {
         "username": "BrunoRetailleau"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   },
 
- {
+  {
     "id": "francois asselineau",
     "display_name": "François ASSELINEAU",
     "accounts": {
@@ -300,11 +376,7 @@
       },
       "facebook": {
         "username": "fasselineau"
-      },
-      "youtube": {
-        "username": ""
       }
     }
   }
-
 ]
