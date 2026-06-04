@@ -1185,7 +1185,7 @@
       sur Instagram, X, TikTok et Facebook.
     </p>
     <ul>
-      <li><strong>Dynamique jour ajustée</strong> : variation journalière en pour mille, pondérée par réseau, puis ajustée en log² selon la plus grande audience sociale du candidat.</li>
+      <li><strong>Dynamique jour ajustée</strong> : variation journalière en pour mille, pondérée par réseau, puis ajustée en log³ selon la plus grande audience sociale du candidat.</li>
       <li><strong>Abonnés</strong> : nombre brut d'abonnés relevé dans les historiques disponibles.</li>
       <li><strong>Abonnés gagnés</strong> : variation absolue du nombre d'abonnés entre deux snapshots successifs.</li>
       <li><strong>Plateformes</strong> : les boutons permettent d'inclure ou d'exclure chaque réseau du calcul affiché.</li>
@@ -1419,14 +1419,14 @@
       return followers.length ? Math.max(...followers) : 0;
     }
 
-    function surfaceLogSquaredFactor(candidateId, date) {
+    function surfaceLogFactor(candidateId, date) {
       const candidateSurface = candidateSurfaceFollowers(candidateId, date);
       const globalSurface = globalSurfaceFollowers(date);
 
       if (candidateSurface <= 0 || globalSurface <= 0) return null;
 
       const logRatio = Math.log1p(candidateSurface) / Math.log1p(globalSurface);
-      return logRatio * logRatio;
+      return logRatio ** 3;
     }
 
     function selectedPlatformValues(candidateId, date, previousDate, metric) {
@@ -1483,7 +1483,7 @@
       const weightedValue = weightedSum / weightSum;
       if (metric !== "daily_adjusted") return weightedValue;
 
-      const surfaceFactor = surfaceLogSquaredFactor(candidateId, date);
+      const surfaceFactor = surfaceLogFactor(candidateId, date);
       return surfaceFactor == null ? null : weightedValue * surfaceFactor;
     }
 
