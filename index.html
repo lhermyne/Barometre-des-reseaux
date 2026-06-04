@@ -1078,7 +1078,9 @@
           <label for="metric">Donnée affichée</label>
           <select id="metric">
             <option value="daily">Dynamique jour (‰)</option>
+            <option value="daily_adjusted">Dynamique jour ajustée (‰)</option>
             <option value="followers">Abonnés</option>
+            <option value="follower_delta">Abonnés gagnés</option>
           </select>
         </div>
 
@@ -1185,7 +1187,9 @@
     </p>
     <ul>
       <li><strong>Dynamique jour</strong> : variation du nombre d'abonnés entre deux snapshots successifs, rapportée en pour mille.</li>
+      <li><strong>Dynamique jour ajustée</strong> : dynamique jour pondérée par réseau, puis ajustée en log² selon la plus grande audience sociale du candidat.</li>
       <li><strong>Abonnés</strong> : nombre brut d'abonnés relevé dans les historiques disponibles.</li>
+      <li><strong>Abonnés gagnés</strong> : variation absolue du nombre d'abonnés entre deux snapshots successifs.</li>
       <li><strong>Plateformes</strong> : les boutons permettent d'inclure ou d'exclure chaque réseau du calcul affiché.</li>
       <li><strong>Périodes</strong> : le graphique peut afficher tout l'historique disponible ou une fenêtre récente.</li>
       <li><strong>Candidats</strong> : la liste à droite permet d'afficher, masquer ou filtrer les courbes individuellement.</li>
@@ -1283,6 +1287,10 @@
     function formatValue(value, metric) {
       if (value == null || Number.isNaN(value)) return "-";
       if (metric === "followers") return Math.round(value).toLocaleString("fr-FR");
+      if (metric === "follower_delta") {
+        const rounded = Math.round(value);
+        return `${rounded >= 0 ? "+" : ""}${rounded.toLocaleString("fr-FR")}`;
+      }
       return `${value >= 0 ? "+" : ""}${value.toFixed(1).replace(".", ",")}‰`;
     }
 
@@ -1390,6 +1398,39 @@
       return state.historyByDate?.[platform]?.[date] ?? null;
     }
 
+    function candidateSurfaceFollowers(candidateId, date) {
+      const followers = activePlatforms()
+        .map(platform => account(snapshotByDate(platform, date), candidateId)?.followers)
+        .filter(value => Number.isFinite(value) && value > 0);
+
+      return followers.length ? Math.max(...followers) : 0;
+    }
+
+    function globalSurfaceFollowers(date) {
+      const followers = [];
+      for (const platform of activePlatforms()) {
+        const snapshot = snapshotByDate(platform, date);
+        if (!snapshot?.accounts) continue;
+
+        for (const accountData of Object.values(snapshot.accounts)) {
+          const value = accountData?.followers;
+          if (Number.isFinite(value) && value > 0) followers.push(value);
+        }
+      }
+
+      return followers.length ? Math.max(...followers) : 0;
+    }
+
+    function surfaceLogSquaredFactor(candidateId, date) {
+      const candidateSurface = candidateSurfaceFollowers(candidateId, date);
+      const globalSurface = globalSurfaceFollowers(date);
+
+      if (candidateSurface <= 0 || globalSurface <= 0) return null;
+
+      const logRatio = Math.log1p(candidateSurface) / Math.log1p(globalSurface);
+      return logRatio * logRatio;
+    }
+
     function selectedPlatformValues(candidateId, date, previousDate, metric) {
       const values = [];
       for (const platform of activePlatforms()) {
@@ -1402,6 +1443,13 @@
         }
 
         const previousFollowers = account(snapshotByDate(platform, previousDate), candidateId)?.followers;
+        if (metric === "follower_delta") {
+          if (currentFollowers != null && previousFollowers != null) {
+            values.push({ value: currentFollowers - previousFollowers, followers: currentFollowers });
+          }
+          continue;
+        }
+
         const value = perMille(currentFollowers, previousFollowers);
         if (value != null) values.push({ value, followers: currentFollowers });
       }
@@ -1417,6 +1465,10 @@
         return values.reduce((sum, item) => sum + (item.value || 0), 0);
       }
 
+      if (metric === "follower_delta") {
+        return values.reduce((sum, item) => sum + (item.value || 0), 0);
+      }
+
       const maxFollowers = Math.max(...values.map(item => item.followers || 0));
       if (maxFollowers <= 0) return null;
 
@@ -1427,7 +1479,14 @@
         weightedSum += item.value * weight;
         weightSum += weight;
       }
-      return weightSum ? weightedSum / weightSum : null;
+
+      if (!weightSum) return null;
+
+      const weightedValue = weightedSum / weightSum;
+      if (metric !== "daily_adjusted") return weightedValue;
+
+      const surfaceFactor = surfaceLogSquaredFactor(candidateId, date);
+      return surfaceFactor == null ? null : weightedValue * surfaceFactor;
     }
 
     function candidateName(candidate) {
