@@ -623,10 +623,23 @@
     }
 
     .candidate-name {
+      display: block;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: 700;
+    }
+
+    .candidate-meta {
+      display: block;
+      margin-top: 3px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
     }
 
     .dot {
@@ -1404,6 +1417,29 @@
       return followers.length ? Math.max(...followers) : 0;
     }
 
+    function latestDataDate() {
+      const dates = allDates();
+      return dates[dates.length - 1] || null;
+    }
+
+    function candidateSelectorAudience(candidate) {
+      const date = latestDataDate();
+      return date ? candidateSurfaceFollowers(candidate.id, date) : 0;
+    }
+
+    function formatAudience(value) {
+      if (!Number.isFinite(value) || value <= 0) return "audience inconnue";
+      return `${Math.round(value).toLocaleString("fr-FR")} abonnés`;
+    }
+
+    function sortCandidatesByAudience(candidates) {
+      return candidates.slice().sort((a, b) => {
+        const audienceDiff = candidateSelectorAudience(b) - candidateSelectorAudience(a);
+        if (audienceDiff !== 0) return audienceDiff;
+        return candidateName(a).localeCompare(candidateName(b), "fr");
+      });
+    }
+
     function globalSurfaceFollowers(date) {
       const followers = [];
       for (const platform of activePlatforms()) {
@@ -1812,10 +1848,10 @@
 
     function renderCandidateList() {
       const query = els.candidateSearch.value.trim().toLowerCase();
-      const candidates = state.candidates.filter(candidate => {
+      const candidates = sortCandidatesByAudience(state.candidates.filter(candidate => {
         const text = `${candidate.id} ${candidateName(candidate)}`.toLowerCase();
         return text.includes(query);
-      });
+      }));
 
       els.candidateList.innerHTML = candidates.map(candidate => {
         const index = state.candidates.findIndex(item => item.id === candidate.id);
@@ -1826,6 +1862,7 @@
         const name = escapeHtml(candidateName(candidate));
         const id = escapeHtml(candidate.id);
         const photoPath = escapeHtml(candidatePhotoPath(candidate));
+        const audience = escapeHtml(formatAudience(candidateSelectorAudience(candidate)));
         return `
           <label class="candidate ${active}" title="${name}" data-candidate-card="${id}">
             <input type="checkbox" data-candidate="${id}" ${checked}>
@@ -1835,6 +1872,7 @@
             </span>
             <span>
               <span class="candidate-name">${name}</span>
+              <span class="candidate-meta">${audience}</span>
             </span>
             <span class="dot" style="background:${color}"></span>
           </label>
