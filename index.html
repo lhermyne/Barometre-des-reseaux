@@ -1222,7 +1222,7 @@
       sur Instagram, X, TikTok et Facebook.
     </p>
     <ul>
-      <li><strong>Dynamique jour ajustée</strong> : variation journalière en pour mille, pondérée par réseau, puis ajustée en log³ selon la plus grande audience sociale du candidat.</li>
+      <li><strong>Dynamique jour ajustée</strong> : variation en pour mille, pondérée par réseau chez le candidat, puis ajustée en log³ face au plus gros compte de la même plateforme.</li>
       <li><strong>Abonnés</strong> : nombre brut d'abonnés relevé dans les historiques disponibles.</li>
       <li><strong>Abonnés gagnés</strong> : variation absolue du nombre d'abonnés entre deux snapshots successifs.</li>
       <li><strong>Plateformes</strong> : les boutons permettent d'inclure ou d'exclure chaque réseau du calcul affiché.</li>
@@ -1440,14 +1440,6 @@
       return state.historyByDate?.[platform]?.[date] ?? null;
     }
 
-    function candidateSurfaceFollowers(candidateId, date) {
-      const followers = activePlatforms()
-        .map(platform => account(snapshotByDate(platform, date), candidateId)?.followers)
-        .filter(value => Number.isFinite(value) && value > 0);
-
-      return followers.length ? Math.max(...followers) : 0;
-    }
-
     function candidateSurfacePlatform(candidateId, date) {
       const platformValues = activePlatforms()
         .map(platform => ({
@@ -1458,6 +1450,22 @@
         .sort((a, b) => b.followers - a.followers);
 
       return platformValues[0] || { platform: null, followers: 0 };
+    }
+
+    function platformSurfaceFollowers(snapshot) {
+      const followers = Object.values(snapshot?.accounts || {})
+        .map(accountData => accountData?.followers)
+        .filter(value => Number.isFinite(value) && value > 0);
+
+      return followers.length ? Math.max(...followers) : 0;
+    }
+
+    function platformLogFactor(followers, snapshot) {
+      const platformSurface = platformSurfaceFollowers(snapshot);
+      if (!Number.isFinite(followers) || followers <= 0 || platformSurface <= 0) return 0;
+
+      const logRatio = Math.log1p(followers) / Math.log1p(platformSurface);
+      return logRatio ** 3;
     }
 
     function latestDataDate() {
@@ -1490,31 +1498,6 @@
       });
     }
 
-    function globalSurfaceFollowers(date) {
-      const followers = [];
-      for (const platform of activePlatforms()) {
-        const snapshot = snapshotByDate(platform, date);
-        if (!snapshot?.accounts) continue;
-
-        for (const accountData of Object.values(snapshot.accounts)) {
-          const value = accountData?.followers;
-          if (Number.isFinite(value) && value > 0) followers.push(value);
-        }
-      }
-
-      return followers.length ? Math.max(...followers) : 0;
-    }
-
-    function surfaceLogFactor(candidateId, date) {
-      const candidateSurface = candidateSurfaceFollowers(candidateId, date);
-      const globalSurface = globalSurfaceFollowers(date);
-
-      if (candidateSurface <= 0 || globalSurface <= 0) return null;
-
-      const logRatio = Math.log1p(candidateSurface) / Math.log1p(globalSurface);
-      return logRatio ** 3;
-    }
-
     function selectedPlatformValues(candidateId, date, previousDate, metric) {
       const values = [];
       for (const platform of activePlatforms()) {
@@ -1535,7 +1518,13 @@
         }
 
         const value = perMille(currentFollowers, previousFollowers);
-        if (value != null) values.push({ value, followers: currentFollowers });
+        if (value != null) {
+          values.push({
+            value,
+            followers: currentFollowers,
+            platformFactor: platformLogFactor(currentFollowers, current)
+          });
+        }
       }
 
       return values;
@@ -1560,17 +1549,12 @@
       let weightSum = 0;
       for (const item of values) {
         const weight = item.followers / maxFollowers;
-        weightedSum += item.value * weight;
+        weightedSum += item.value * (item.platformFactor ?? 1) * weight;
         weightSum += weight;
       }
 
       if (!weightSum) return null;
-
-      const weightedValue = weightedSum / weightSum;
-      if (metric !== "daily_adjusted") return weightedValue;
-
-      const surfaceFactor = surfaceLogFactor(candidateId, date);
-      return surfaceFactor == null ? null : weightedValue * surfaceFactor;
+      return weightedSum / weightSum;
     }
 
     function currentPeriodDates() {
