@@ -147,11 +147,13 @@ a {
 }
 
 .nav a:hover,
+.nav a.active,
 .button:hover {
   color: var(--green);
 }
 
 .nav a:hover::after,
+.nav a.active::after,
 .button:hover::after,
 .button.primary::after {
   background: var(--green);
@@ -536,10 +538,13 @@ main {
   .nav {
     width: 100%;
     justify-content: stretch;
+    flex-wrap: nowrap;
   }
 
   .nav a {
-    flex: 1 1 130px;
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   .hero,
@@ -582,6 +587,21 @@ main {
 
   .brand-text strong {
     font-size: 16px;
+  }
+
+  .brand-text small {
+    font-size: 11px;
+  }
+
+  .nav {
+    gap: 6px;
+  }
+
+  .nav a {
+    min-height: 38px;
+    padding: 8px 8px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
   }
 
   .hero {

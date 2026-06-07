@@ -135,5 +135,36 @@
       <a href="#accueil">Retour en haut</a>
     </span>
   </footer>
+  <script>
+    const sectionLinks = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
+    const sections = sectionLinks
+      .map(link => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+
+    function setActiveSection(id) {
+      sectionLinks.forEach(link => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+      });
+    }
+
+    if (sections.length) {
+      setActiveSection((location.hash || "#accueil").slice(1));
+
+      const observer = new IntersectionObserver(entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      }, {
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0.05, 0.25, 0.5, 0.75]
+      });
+
+      sections.forEach(section => observer.observe(section));
+      window.addEventListener("hashchange", () => {
+        setActiveSection((location.hash || "#accueil").slice(1));
+      });
+    }
+  </script>
 </body>
 </html>

@@ -936,11 +936,16 @@
     @media (max-width: 980px) {
       .site-header {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        align-items: start;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+      }
+
+      .dashboard-heading {
+        min-width: 0;
       }
 
       .nav {
+        grid-column: 1 / -1;
         justify-content: start;
       }
 
@@ -979,20 +984,27 @@
 
       .site-header {
         padding: 22px 14px 14px;
-        gap: 14px;
+        gap: 8px 12px;
+      }
+
+      .dashboard-heading {
+        display: contents;
       }
 
       h1 {
-        font-size: clamp(25px, 8vw, 32px);
-        line-height: 0.88;
+        grid-column: 2;
+        align-self: center;
+        font-size: clamp(18px, 5.4vw, 24px);
+        line-height: 0.96;
       }
 
       h1 .title-line {
-        display: block;
-        white-space: nowrap;
+        display: inline;
+        white-space: normal;
       }
 
       .brand {
+        grid-column: 1;
         gap: 12px;
       }
 
@@ -1010,11 +1022,20 @@
       }
 
       .subtitle {
-        font-size: 14px;
+        grid-column: 1 / -1;
+        margin-top: 0;
+        font-size: 13px;
+      }
+
+      .nav {
+        grid-column: 1 / -1;
+        width: 100%;
+        flex-wrap: nowrap;
       }
 
       .nav a {
-        flex: 1 1 100px;
+        flex: 1 1 0;
+        min-width: 0;
         padding: 9px 12px;
         font-size: 13px;
       }
