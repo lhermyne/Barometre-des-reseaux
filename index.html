@@ -92,17 +92,34 @@
             </iframe>
           </div>
         </div>
-        <div class="rss-slot rss-widget-slot panel">
+        <div class="rss-slot rss-widget-slot panel discord-slot">
           <strong>Serveur Discord</strong>
-          <div class="rss-embed discord-embed">
-            <iframe
-              src="https://discord.com/widget?id=1439397795067859136&theme=dark"
-              title="Serveur Discord L'Hermyne"
-              loading="lazy"
-              allowtransparency="true"
-              frameborder="0"
-              sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
-            </iframe>
+          <div class="discord-widget" data-discord-widget="https://discord.com/api/guilds/1439397795067859136/widget.json">
+            <div class="discord-widget-header">
+              <span class="discord-guild-icon"><img src="assets/guild%20icon.png" alt="" loading="lazy"></span>
+              <div>
+                <span class="discord-kicker">Communauté</span>
+                <strong data-discord-name>L'HEXAGONE</strong>
+              </div>
+            </div>
+            <div class="discord-presence">
+              <span data-discord-presence>...</span>
+              <small>membres en ligne</small>
+            </div>
+            <div class="discord-widget-section">
+              <span>Salons accessibles</span>
+              <ul data-discord-channels>
+                <li>Chargement...</li>
+              </ul>
+            </div>
+            <div class="discord-widget-section">
+              <span>Connectés</span>
+              <div class="discord-avatars" data-discord-avatars aria-label="Membres connectés">
+              </div>
+            </div>
+            <a class="button primary discord-join" href="https://discord.gg/X5K4kKnNt8" target="_blank" rel="noreferrer">
+              Rejoindre le Discord
+            </a>
           </div>
         </div>
       </div>
@@ -134,7 +151,7 @@
           <span class="network-icon facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.1V6.6c0-.7.2-1.1 1.2-1.1h1.7V2.2c-.8-.1-1.7-.2-2.5-.2-2.6 0-4.4 1.6-4.4 4.4v1.7H7.3v3.7h2.9V22h4V11.8h2.9l.5-3.7h-3.4Z"/></svg></span>
           <span><strong>Facebook</strong><small>Relais des publications et communauté.</small></span>
         </a>
-        <a class="link-card panel" href="https://discord.gg/E7tXdUQ6xr" target="_blank" rel="noreferrer">
+        <a class="link-card panel" href="https://discord.gg/X5K4kKnNt8" target="_blank" rel="noreferrer">
           <span class="network-icon discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 5.1A16.5 16.5 0 0 0 15.4 4l-.2.4c1.5.4 2.3 1 2.3 1s-1.9-1-5.4-1-5.4 1-5.4 1 .8-.6 2.3-1L8.8 4c-1.5.2-2.9.6-4.2 1.1-2.6 3.8-3.3 7.5-2.9 11.1 1.7 1.3 3.4 2 5 2.4l.6-.9c-1.1-.4-2.1-1-3-1.8.3.2.6.4.9.5 3.9 1.8 8.1 1.8 12 0 .3-.1.6-.3.9-.5-.9.8-1.9 1.4-3 1.8l.6.9c1.6-.4 3.3-1.1 5-2.4.5-4.1-.8-7.8-3.2-11.1ZM8.5 14.2c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm7 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg></span>
           <span><strong>Discord</strong><small>Échanges, suivi du bot et discussions.</small></span>
         </a>
@@ -177,6 +194,51 @@
       window.addEventListener("hashchange", () => {
         setActiveSection((location.hash || "#accueil").slice(1));
       });
+    }
+
+    const discordWidget = document.querySelector("[data-discord-widget]");
+    if (discordWidget) {
+      const channelsList = discordWidget.querySelector("[data-discord-channels]");
+      const avatarsList = discordWidget.querySelector("[data-discord-avatars]");
+
+      function fillList(list, items, getText) {
+        list.textContent = "";
+        items.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = getText(item);
+          list.appendChild(li);
+        });
+      }
+
+      function fillAvatars(list, members) {
+        list.textContent = "";
+        members.forEach(member => {
+          if (!member.avatar_url) return;
+          const img = document.createElement("img");
+          img.src = member.avatar_url;
+          img.alt = "";
+          img.loading = "lazy";
+          list.appendChild(img);
+        });
+      }
+
+      fetch(discordWidget.dataset.discordWidget)
+        .then(response => {
+          if (!response.ok) throw new Error("Widget Discord indisponible");
+          return response.json();
+        })
+        .then(data => {
+          discordWidget.querySelector("[data-discord-name]").textContent = data.name || "Discord";
+          discordWidget.querySelector("[data-discord-presence]").textContent = data.presence_count ?? 0;
+
+          fillList(channelsList, (data.channels || []).slice(0, 3), channel => `# ${channel.name}`);
+          fillAvatars(avatarsList, (data.members || []).slice(0, 8));
+        })
+        .catch(() => {
+          discordWidget.querySelector("[data-discord-presence]").textContent = "?";
+          channelsList.innerHTML = "<li>Widget indisponible</li>";
+          avatarsList.textContent = "";
+        });
     }
   </script>
 </body>
