@@ -443,7 +443,7 @@ main {
 }
 
 .rss-grid {
-  grid-template-columns: repeat(2, minmax(378px, 394px));
+  grid-template-columns: repeat(3, minmax(360px, 394px));
   justify-content: start;
   align-items: start;
   gap: 18px;
@@ -491,7 +491,8 @@ main {
 }
 
 .rss-embed-instagram,
-.rss-embed-twitter {
+.rss-embed-twitter,
+.discord-embed {
   height: 466px;
   min-height: 0;
   padding-top: 0;
