@@ -1582,12 +1582,11 @@
       return followers.length ? Math.max(...followers) : 0;
     }
 
-    function platformLogFactor(followers, snapshot) {
+    function platformSurfaceFactor(followers, snapshot) {
       const platformSurface = platformSurfaceFollowers(snapshot);
       if (!Number.isFinite(followers) || followers <= 0 || platformSurface <= 0) return 0;
 
-      const logRatio = Math.log1p(followers) / Math.log1p(platformSurface);
-      return logRatio ** 3;
+      return Math.sqrt(followers / platformSurface);
     }
 
     function latestDataDate() {
@@ -1644,7 +1643,7 @@
           values.push({
             value,
             followers: currentFollowers,
-            platformFactor: platformLogFactor(currentFollowers, current)
+            platformFactor: platformSurfaceFactor(currentFollowers, current)
           });
         }
       }
@@ -1723,6 +1722,7 @@
     }
 
     function getColor(candidate, index) {
+      if (candidate.color) return candidate.color;
       if (CANDIDATE_COLORS[candidate.id]) return CANDIDATE_COLORS[candidate.id];
       const key = candidate.id || String(index);
       let hash = 0;
@@ -2107,7 +2107,8 @@
     }
 
     function initializeData(candidates, histories) {
-      state.candidates = candidates.slice().sort((a, b) => candidateName(a).localeCompare(candidateName(b), "fr"));
+      const visibleCandidates = candidates.filter(candidate => candidate.enabled !== false);
+      state.candidates = visibleCandidates.slice().sort((a, b) => candidateName(a).localeCompare(candidateName(b), "fr"));
       state.histories = histories;
       normalizeHistories();
       state.selectedPlatforms = new Set(Object.keys(PLATFORM_FILES));
