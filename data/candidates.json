@@ -1,5 +1,4 @@
 [
-
   {
     "id": "jordan bardella",
     "display_name": "Jordan BARDELLA",
@@ -16,9 +15,9 @@
       "facebook": {
         "username": "JordanBardella"
       }
-    }
+    },
+    "enabled": false
   },
-
   {
     "id": "florian philippot",
     "display_name": "Florian PHILIPPOT",
@@ -37,7 +36,6 @@
       }
     }
   },
-
   {
     "id": "marine tondelier",
     "display_name": "Marine TONDELIER",
@@ -56,7 +54,6 @@
       }
     }
   },
-
   {
     "id": "françois ruffin",
     "display_name": "François RUFFIN",
@@ -75,7 +72,6 @@
       }
     }
   },
-
   {
     "id": "fabien roussel",
     "display_name": "Fabien ROUSSEL",
@@ -94,7 +90,6 @@
       }
     }
   },
-
   {
     "id": "olivier faure",
     "display_name": "Olivier FAURE",
@@ -113,7 +108,6 @@
       }
     }
   },
-
   {
     "id": "nathalie arthaud",
     "display_name": "Nathalie ARTHAUD",
@@ -132,7 +126,6 @@
       }
     }
   },
-
   {
     "id": "edouard philippe",
     "display_name": "Édouard PHILIPPE",
@@ -151,7 +144,6 @@
       }
     }
   },
-
   {
     "id": "marine le pen",
     "display_name": "Marine LE PEN",
@@ -170,7 +162,6 @@
       }
     }
   },
-
   {
     "id": "dominique de villepin",
     "display_name": "Dominique DE VILLEPIN",
@@ -189,7 +180,6 @@
       }
     }
   },
-
   {
     "id": "david lisnard",
     "display_name": "David LISNARD",
@@ -208,7 +198,6 @@
       }
     }
   },
-
   {
     "id": "francois hollande",
     "display_name": "François HOLLANDE",
@@ -227,7 +216,6 @@
       }
     }
   },
-
   {
     "id": "gabriel attal",
     "display_name": "Gabriel ATTAL",
@@ -246,7 +234,6 @@
       }
     }
   },
-
   {
     "id": "raphael glucksmann",
     "display_name": "Raphaël GLUCKSMANN",
@@ -265,7 +252,6 @@
       }
     }
   },
-
   {
     "id": "sarah knafo",
     "display_name": "Sarah KNAFO",
@@ -284,7 +270,6 @@
       }
     }
   },
-
   {
     "id": "jean luc melenchon",
     "display_name": "Jean-Luc MÉLENCHON",
@@ -303,7 +288,6 @@
       }
     }
   },
-
   {
     "id": "nicolas dupont aignan",
     "display_name": "Nicolas DUPONT-AIGNAN",
@@ -322,7 +306,6 @@
       }
     }
   },
-
   {
     "id": "eric zemmour",
     "display_name": "Eric ZEMMOUR",
@@ -341,7 +324,6 @@
       }
     }
   },
-
   {
     "id": "bruno retailleau",
     "display_name": "Bruno RETAILLEAU",
@@ -360,7 +342,6 @@
       }
     }
   },
-
   {
     "id": "francois asselineau",
     "display_name": "François ASSELINEAU",
